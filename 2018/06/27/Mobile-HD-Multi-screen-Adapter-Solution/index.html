@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html lang="">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#202020"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <script src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+  
+  
+    <meta name="keywords" content="移动开发,html5," />
+  
+
+  
+    <meta name="description" content="移动端高清、多屏适配方案" />
+  
+  
+  <link rel="icon" type="image/x-icon" href="/logo.png">
+  <title>移动端高清、多屏适配方案 [ Womy&#39;s blog ]</title>
+  
+    <!-- stylesheets list from config.yml -->
+    
+      <link rel="stylesheet" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css">
+    
+      <link rel="stylesheet" href="/css/xoxo.css">
+    
+  
+</head>
+
+<body>
+  <div class="nav-container">
+    <nav class="home-menu pure-menu pure-menu-horizontal">
+  <a class="pure-menu-heading" href="/">
+    <span class="title">Womy&#39;s blog</span>
+  </a>
+
+  <ul class="pure-menu-list clearfix">
+      
+          
+            <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/archives" class="pure-menu-link">归档</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/tags" class="pure-menu-link">标签</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/search" class="pure-menu-link">搜索</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/about" class="pure-menu-link">关于</a></li>
+          
+      
+          
+            <li class="pure-menu-item"><a href="/atom.xml" class="pure-menu-link">订阅</a></li>
+          
+      
+  </ul>
+   
+</nav>
+  </div>
+
+  <div class="container" id="content-outer">
+    <div class="inner" id="content-inner">
+      <div class="post-container">
+  <article class="post" id="post">
+    <header class="post-header text-center">
+      <h1 class="title">
+        移动端高清、多屏适配方案
+      </h1>
+      <span>
+        
+        <time class="time" datetime="2018-06-27T07:10:48.000Z">
+        2018-06-27
+      </time>
+        
+      </span>
+      <span class="slash">/</span>
+      <span class="post-meta">
+      <span class="post-tags">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/html5/">html5</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/移动开发/">移动开发</a></li></ul>
+      </span>
+    </span>
+      <span class="slash">/</span>
+      <span class="read">
+      <span id="busuanzi_value_page_pv"></span> 点击
+    </span>
+    </header>
+
+    <div class="post-content">
+      <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><ol>
+<li>开发移动端H5页面</li>
+<li>面对不同分辨率的手机</li>
+<li>面对不同屏幕尺寸的手机</li>
+</ol>
+<hr>
+<h3 id="视觉稿"><a href="#视觉稿" class="headerlink" title="视觉稿"></a>视觉稿</h3><p>在前端开发之前，视觉MM会给我们一个psd文件，称之为视觉稿。</p>
+<p>对于移动端开发而言，为了做到页面高清的效果，视觉稿的规范往往会遵循以下两点：</p>
+<ol>
+<li>首先，选取一款手机的屏幕宽高作为基准(以前是iphone4的320×480，现在更多的是iphone6的375×667)。</li>
+<li>对于retina屏幕(如: dpr=2)，为了达到高清效果，视觉稿的画布大小会是基准的2倍，也就是说像素点个数是原来的4倍（对iphone6而言：原先的375×667，就会变成750×1334）。</li>
+</ol>
+<p>问题：</p>
+<ol>
+<li>对于dpr=2的手机，为什么画布大小×2，就可以解决高清问题？</li>
+<li>对于2倍大小的视觉稿，在具体的css编码中如何还原每一个区块的真实宽高(也就是布局问题)?</li>
+</ol>
+<p>带着问题，往下看…</p>
+<hr>
+<h3 id="一些概念"><a href="#一些概念" class="headerlink" title="一些概念"></a>一些概念</h3><p>在进行具体的分析之前，首先得知道下面这些关键性基本概念(术语)。</p>
+<h6 id="物理像素-physical-pixel"><a href="#物理像素-physical-pixel" class="headerlink" title="物理像素(physical pixel)"></a>物理像素(physical pixel)</h6><p>一个物理像素是显示器(手机屏幕)上最小的物理显示单元，在操作系统的调度下，每一个设备像素都有自己的颜色值和亮度值。</p>
+<h6 id="设备独立像素-density-independent-pixel"><a href="#设备独立像素-density-independent-pixel" class="headerlink" title="设备独立像素(density-independent pixel)"></a>设备独立像素(density-independent pixel)</h6><p>设备独立像素(也叫密度无关像素)，可以认为是计算机坐标系统中得一个点，这个点代表一个可以由程序使用的虚拟像素(比如: css像素)，然后由相关系统转换为物理像素。</p>
+<p>所以说，物理像素和设备独立像素之间存在着一定的对应关系，这就是接下来要说的设备像素比。</p>
+<h6 id="设备像素比-device-pixel-ratio"><a href="#设备像素比-device-pixel-ratio" class="headerlink" title="设备像素比(device pixel ratio)"></a>设备像素比(device pixel ratio)</h6><p>设备像素比(简称dpr)定义了物理像素和设备独立像素的对应关系，它的值可以按如下的公式的得到：</p>
+<pre><code>设备像素比 = 物理像素 / 设备独立像素 // 在某一方向上，x方向或者y方向
+</code></pre><p>在javascript中，可以通过<code>window.devicePixelRatio</code>获取到当前设备的dpr。</p>
+<p>在css中，可以通过<code>-webkit-device-pixel-ratio</code>，<code>-webkit-min-device-pixel-ratio</code>和  <code>-webkit-max-device-pixel-ratio</code>进行媒体查询，对不同dpr的设备，做一些样式适配(这里只针对webkit内核的浏览器和webview)。</p>
+<hr>
+<h5 id="综合上面几个概念，一起举例说明下："><a href="#综合上面几个概念，一起举例说明下：" class="headerlink" title="综合上面几个概念，一起举例说明下："></a>综合上面几个概念，一起举例说明下：</h5><p>以iphone6为例：</p>
+<ol>
+<li>设备宽高为375×667，可以理解为设备独立像素(或css像素)。</li>
+<li>dpr为2，根据上面的计算公式，其物理像素就应该×2，为750×1334。</li>
+</ol>
+<p>用一张图来表现，就是这样(原谅我的盗图)：</p>
+<p><img src="https://img.alicdn.com/tps/TB1uWfJIpXXXXaoXXXXXXXXXXXX.gif" alt="retina vs normal"></p>
+<p>上图中可以看出，对于这样的css样式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">width: 2px;</span><br><span class="line">height: 2px;</span><br></pre></td></tr></table></figure>
+<p>在不同的屏幕上(普通屏幕 vs retina屏幕)，css像素所呈现的大小(物理尺寸)是一致的，不同的是1个css像素所对应的物理像素个数是不一致的。</p>
+<p>在普通屏幕下，1个css像素 对应 1个物理像素(<code>1:1</code>)。 在retina 屏幕下，1个css像素对应 4个物理像素(<code>1:4</code>)。</p>
+<hr>
+<h3 id="位图像素"><a href="#位图像素" class="headerlink" title="位图像素"></a>位图像素</h3><p>一个位图像素是栅格图像(如：png, jpg, gif等)最小的数据单元。每一个位图像素都包含着一些自身的显示信息(如：显示位置，颜色值，透明度等)。</p>
+<hr>
+<p>谈到这里，就得说一下，retina下图片的展示情况？</p>
+<p>理论上，1个位图像素对应于1个物理像素，图片才能得到完美清晰的展示。</p>
+<p>在普通屏幕下是没有问题的，但是在retina屏幕下就会出现位图像素点不够，从而导致图片模糊的情况。</p>
+<p>用一张图来表示：</p>
+<p><img src="https://img.alicdn.com/tps/TB12ALnIpXXXXb1XVXXXXXXXXXX.jpg" alt="retina image blurry"></p>
+<p>如上图：对于dpr=2的retina屏幕而言，1个位图像素对应于4个物理像素，由于单个位图像素不可以再进一步分割，所以只能就近取色，从而导致图片模糊(注意上述的几个颜色值)。</p>
+<p>所以，对于图片高清问题，比较好的方案就是<code>两倍图片</code>(@2x)。</p>
+<p>如：200×300(css pixel)img标签，就需要提供400×600的图片。</p>
+<p>如此一来，位图像素点个数就是原来的<code>4</code>倍，在retina屏幕下，位图像素点个数就可以跟<code>物理像素点</code>个数形成<code>1 : 1</code>的比例，图片自然就清晰了(这也解释了之前留下的一个问题，为啥视觉稿的画布大小要<code>×2</code>？)。</p>
+<hr>
+<p>这里就还有另一个问题，如果普通屏幕下，也用了<code>两倍图片</code>，会怎样呢？</p>
+<p>很明显，在普通屏幕下，200×300(css pixel)img标签，所对应的物理像素个数就是<code>200×300</code>个，而<code>两倍图片</code>的位图像素个数则是<code>200×300*4</code>，所以就出现一个物理像素点对应4个位图像素点，所以它的取色也只能通过一定的算法(显示结果就是一张只有原图像素总数四分之一，我们称这个过程叫做<code>downsampling</code>)，肉眼看上去虽然图片不会模糊，但是会觉得图片缺少一些锐利度，或者是有点色差(但还是可以接受的)。</p>
+<p>用一张图片来表示：</p>
+<p><img src="https://img.alicdn.com/tps/TB1kFHnIpXXXXclXVXXXXXXXXXX.jpg" alt="enter image description here"></p>
+<hr>
+<p>针对上面的两个问题，我做了一个demo(内网访问)<a href="http://groups.alidemo.cn/cm/xx-retina-test/build/p/downsample/index.html" target="_blank" rel="noopener">狂戳这里</a>。</p>
+<p><img src="https://img.alicdn.com/tps/TB11KbzIpXXXXXcXFXXXXXXXXXX.png" alt="retina image diff"></p>
+<p>demo中，100×100的图片，分别放在100×100，50×50，25×25的img容器中，在retina屏幕下的显示效果。</p>
+<p><code>条形图</code>，通过放大镜其实可以看出边界像素点取值的不同：</p>
+<ul>
+<li>图1，就近取色，色值介于红白之间，偏淡，图片看上去会模糊(可以理解为图片拉伸)。</li>
+<li>图2，没有就近取色，色值要么是红，要么是白，图片看上去很清晰。</li>
+<li>图3，就近取色，色值介于红白之间，偏重，图片看上去有色差，缺少锐利度(可以理解为图片挤压)。</li>
+</ul>
+<p><code>爱字图</code>，可以通过看文字”爱”来区分图片模糊还是清晰。</p>
+<hr>
+<h3 id="几个问题"><a href="#几个问题" class="headerlink" title="几个问题"></a>几个问题</h3><p>这里说一下，移动端H5开发，在不同分辨率，不同屏幕手机下会遇到的几个经典问题。</p>
+<h5 id="retina下，图片高清问题"><a href="#retina下，图片高清问题" class="headerlink" title="retina下，图片高清问题"></a>retina下，图片高清问题</h5><p>这个问题上面已经介绍过解决方案了：<code>两倍图片(@2x)</code>，然后图片容器缩小<code>50%</code>。</p>
+<p>如：图片大小，400×600;</p>
+<p>1.img标签</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">width: 200px;</span><br><span class="line">height: 300px;</span><br></pre></td></tr></table></figure>
+<p>2.背景图片</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">width: 200px;</span><br><span class="line">height: 300px;</span><br><span class="line">background-image: url(image@2x.jpg);</span><br><span class="line">background-size: 200px 300px; // 或者: background-size: contain;</span><br></pre></td></tr></table></figure>
+<p>这样的缺点，很明显，普通屏幕下：</p>
+<ol>
+<li>同样下载了@2x的图片，造成资源浪费。</li>
+<li>图片由于downsampling，会失去了一些锐利度(或是色差)。</li>
+</ol>
+<p>所以最好的解决办法是：<code>不同的dpr下，加载不同的尺寸的图片</code>。</p>
+<p>不管是通过css媒体查询，还是通过javascript条件判断都是可以的。</p>
+<hr>
+<p>那么问题来了，这样的话，不就是要准备两套图片了嘛？(@1x 和@2x)</p>
+<p>我想，做的好的公司，都会有这么一个<code>图片服务器</code>，通过url获取参数，然后可以控制图片质量，也可以将图片裁剪成不同的尺寸。</p>
+<p>所以我们只需上传大图(@2x)，其余小图都交给图片服务器处理，我们只要负责拼接url即可。</p>
+<p>如，这样一张原图：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://img.alicdn.com/tps/TB1AGMmIpXXXXafXpXXXXXXXXXX.jpg // 原图</span><br></pre></td></tr></table></figure>
+<p>可以类似这样，进行图片裁剪：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 200×200</span><br><span class="line">https://img.alicdn.com/tps/TB1AGMmIpXXXXafXpXXXXXXXXXX.jpg_200x200.jpg</span><br><span class="line"></span><br><span class="line">// 100×100</span><br><span class="line">https://img.alicdn.com/tps/TB1AGMmIpXXXXafXpXXXXXXXXXX.jpg_100x100.jpg</span><br></pre></td></tr></table></figure>
+<p>(ps: 当然裁剪只是对原图的等比裁剪，得保证图片的清晰嘛~)</p>
+<hr>
+<h5 id="retina下，border-1px问题"><a href="#retina下，border-1px问题" class="headerlink" title="retina下，border: 1px问题"></a>retina下，border: 1px问题</h5><p>这大概是设计师最敏感，最关心的问题了。</p>
+<p>首先得说一下，为什么存在retina下，border: 1px这一说？</p>
+<p>我们正常的写css，像这样<code>border: 1px;</code>，在retina屏幕下，会有什么问题吗？</p>
+<p>先来，来看看下面的图：</p>
+<p><img src="https://img.alicdn.com/tps/TB15IQgIpXXXXa3XFXXXXXXXXXX.jpg" alt="1px border normal"></p>
+<p>上面两张图分别是在<code>iphone3gs(dpr=1)</code>和<code>iphone5(dpr=2)</code>下面的测试效果，对比来看，对于1px的border的展示，它们是一致的，并无区别。</p>
+<p>那么retina显示屏的优势在哪里，设计师为何觉得<code>高清屏</code>下(右图)这个线条<code>粗</code>呢？明明和左右一样的~</p>
+<p>还是通过一张图来解释(原谅我再次盗图)：</p>
+<p><img src="https://img.alicdn.com/tps/TB1OPkfIpXXXXXWaXXXXXXXXXXX.jpg_q90.jpg" alt="retina vs normal"></p>
+<p>上图中，对于一条<code>1px</code>宽的直线，它们在屏幕上的物理尺寸(灰色区域)的确是相同的，不同的其实是屏幕上最小的物理显示单元，即物理像素，所以对于一条直线，iphone5它能显示的最小宽度其实是图中的红线圈出来的灰色区域，用css来表示，理论上说是<code>0.5px</code>。</p>
+<p><strong>所以，设计师想要的retina下<code>border: 1px;</code>，其实就是1物理像素宽，对于css而言，可以认为是<code>border: 0.5px;</code>，这是retina下(dpr=2)下能显示的最小单位。</strong></p>
+<p>然而，无奈并不是所有手机浏览器都能识别<code>border: 0.5px;</code>，ios7以下，android等其他系统里，0.5px会被当成为0px处理，那么如何实现这<code>0.5px</code>呢？</p>
+<p>最简单的一个做法就是这样(<code>元素scale</code>)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.scale&#123;</span><br><span class="line">    position: relative;</span><br><span class="line">&#125;</span><br><span class="line">.scale:after&#123;</span><br><span class="line">    content:<span class="string">""</span>;</span><br><span class="line">    position: absolute;</span><br><span class="line">    bottom:0px;</span><br><span class="line">    left:0px;</span><br><span class="line">    right:0px;</span><br><span class="line">    border-bottom:1px solid <span class="comment">#ddd;</span></span><br><span class="line">    -webkit-transform:scaleY(.5);</span><br><span class="line">    -webkit-transform-origin:0 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们照常写<code>border-bottom: 1px solid #ddd;</code>，然后通过<code>transform: scaleY(.5)</code>缩小0.5倍来达到<code>0.5px</code>的效果，但是这样hack实在是不够通用(如：圆角等)，写起来也麻烦。</p>
+<p>当然还有其他好多hack方法，网上都可以搜索到，但是各有利弊，这里比较推荐的还是页面<code>scale</code>的方案，是比较通用的，几乎满足所有场景。</p>
+<p>对于iphone5(dpr=2)，添加如下的meta标签，设置viewport(scale 0.5)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta name=<span class="string">"viewport"</span> content=<span class="string">"width=640,initial-scale=0.5,maximum-scale=0.5, minimum-scale=0.5,user-scalable=no"</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>这样，页面中的所有的<code>border: 1px</code>都将缩小0.5，从而达到<code>border: 0.5px;</code>的效果。</p>
+<p>有人担心页面scale后会影响性能，<code>@妙净</code>同学做过性能测试，见<a href="http://www.atatech.org/articles/26335#1" target="_blank" rel="noopener">这里</a>(内网地址)。</p>
+<p>看一下实现后的效果图对比(右图为优化过的)：</p>
+<p><img src="https://img.alicdn.com/tps/TB1HPQwIpXXXXXgXXXXXXXXXXXX.jpg" alt="retina vs normal"></p>
+<hr>
+<p>然而，页面scale，必然会带来一些问题：</p>
+<ol>
+<li>字体大小会被缩放</li>
+<li>页面布局会被缩放(如: div的宽高等)</li>
+</ol>
+<p>这两个问题后面讲到…</p>
+<h5 id="多屏适配布局问题"><a href="#多屏适配布局问题" class="headerlink" title="多屏适配布局问题"></a>多屏适配布局问题</h5><p>移动端布局，为了适配各种大屏手机，目前最好用的方案莫过于使用相对单位<code>rem</code>。</p>
+<p>基于rem的原理，我们要做的就是: <strong>针对不同手机<code>屏幕尺寸</code>和<code>dpr</code>动态的改变根节点html的<code>font-size</code>大小(基准值)</strong>。</p>
+<p>这里我们提取了一个公式(rem表示基准值)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rem = document.documentElement.clientWidth * dpr / 10</span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<ol>
+<li>乘以dpr，是因为页面有可能为了实现<code>1px border</code>页面会缩放(scale) 1/dpr 倍(如果没有，dpr=1),。</li>
+<li>除以10，是为了取整，方便计算(理论上可以是任何值)</li>
+</ol>
+<p>所以就像下面这样，html的font-size可能会：</p>
+<p>iphone3gs: 320px / 10 = 32px</p>
+<p>iphone4/5: 320px * 2 / 10 = 64px</p>
+<p>iphone6: 375px * 2 / 10 = 75px</p>
+<p>对于动态改变根节点html的font-size，我们可以通过css做，也可以通过javascript做。</p>
+<p><code>css方式</code>，可以通过设备宽度来媒体查询来改变html的font-size：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">   html&#123;font-size: 32px;&#125;</span><br><span class="line">   //iphone 6 </span><br><span class="line">@media (min-device-width : 375px) &#123;</span><br><span class="line">  		html&#123;font-size: 64px;&#125;</span><br><span class="line">&#125;</span><br><span class="line">// iphone6 plus </span><br><span class="line">@media (min-device-width : 414px) &#123;</span><br><span class="line">   	html&#123;font-size: 75px;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>缺点：通过设备宽度<code>范围区间</code>这样的媒体查询来动态改变rem基准值，其实不够精确，比如：宽度为360px 和 宽度为320px的手机，因为屏宽在同一范围区间内(&lt;375px)，所以会被同等对待(rem基准值相同)，而事实上他们的屏幕宽度并不相等，它们的布局也应该有所不同。最终，结论就是：这样的做法，没有做到足够的精确，但是够用。</p>
+<p><code>javascript方式</code>，通过上面的公式，计算出基准值rem，然后写入样式，大概如下(代码参考自kimi的m-base模块)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">var dpr, rem, scale;</span><br><span class="line">var docEl = document.documentElement;</span><br><span class="line">var fontEl = document.createElement(<span class="string">'style'</span>);</span><br><span class="line">var metaEl = document.querySelector(<span class="string">'meta[name="viewport"]'</span>);</span><br><span class="line"></span><br><span class="line">dpr = window.devicePixelRatio || 1;</span><br><span class="line">rem = docEl.clientWidth * dpr / 10;</span><br><span class="line">scale = 1 / dpr;</span><br><span class="line"></span><br><span class="line">// 设置viewport，进行缩放，达到高清效果</span><br><span class="line">metaEl.setAttribute(<span class="string">'content'</span>, <span class="string">'width='</span> + dpr * docEl.clientWidth + <span class="string">',initial-scale='</span> + scale + <span class="string">',maximum-scale='</span> + scale + <span class="string">', minimum-scale='</span> + scale + <span class="string">',user-scalable=no'</span>);</span><br><span class="line"></span><br><span class="line">// 设置data-dpr属性，留作的css hack之用</span><br><span class="line">docEl.setAttribute(<span class="string">'data-dpr'</span>, dpr);</span><br><span class="line"></span><br><span class="line">// 动态写入样式</span><br><span class="line">docEl.firstElementChild.appendChild(fontEl);</span><br><span class="line">fontEl.innerHTML = <span class="string">'html&#123;font-size:'</span> + rem + <span class="string">'px!important;&#125;'</span>;</span><br><span class="line"></span><br><span class="line">// 给js调用的，某一dpr下rem和px之间的转换函数</span><br><span class="line">window.rem2px = <span class="keyword">function</span>(v) &#123;</span><br><span class="line">   	v = parseFloat(v);</span><br><span class="line">   	<span class="built_in">return</span> v * rem;</span><br><span class="line">&#125;;</span><br><span class="line">window.px2rem = <span class="keyword">function</span>(v) &#123;</span><br><span class="line">   	v = parseFloat(v);</span><br><span class="line">   	<span class="built_in">return</span> v / rem;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">window.dpr = dpr;</span><br><span class="line">window.rem = rem;</span><br></pre></td></tr></table></figure>
+<p>这种方式，可以精确地算出不同屏幕所应有的rem基准值，缺点就是要加载这么一段js代码，但个人觉得是这是目前最好的方案了。</p>
+<p>因为这个方案同时解决了三个问题：</p>
+<ol>
+<li>border: 1px问题</li>
+<li>图片高清问题</li>
+<li>屏幕适配布局问题</li>
+</ol>
+<hr>
+<p>说到布局，自然就得回答一下最初的留下的那个问题：如何在css编码中还原视觉稿的真实宽高？</p>
+<p>前提条件：</p>
+<ol>
+<li>拿到的是一个针对iphone6的高清视觉稿<code>750×1334</code></li>
+<li>采用上述的高清方案(js代码)。</li>
+</ol>
+<p>如果有一个区块，在psd文件中量出：宽高750×300px的div，那么如何转换成rem单位呢？</p>
+<p>公式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rem = px / 基准值;</span><br></pre></td></tr></table></figure>
+<p>对于一个iphone6的视觉稿，它的基准值就是75(之前有提到);</p>
+<p>所以，在确定了视觉稿(即确定了基准值)后，通常我们会用less写一个mixin，像这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 例如: .px2rem(height, 80);</span><br><span class="line">.px2rem(@name, @px)&#123;</span><br><span class="line">   	@&#123;name&#125;: @px / 75 * 1rem;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以，对于宽高750×300px的div，我们用less就这样写：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.px2rem(width, 750);</span><br><span class="line">.px2rem(height, 300);</span><br></pre></td></tr></table></figure>
+<p>转换成html，就是这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">width: 10rem; // -&gt; 750px</span><br><span class="line">height: 4rem; // -&gt; 300px</span><br></pre></td></tr></table></figure>
+<p>最后因为dpr为2，页面scale了0.5，所以在手机屏幕上显示的真实宽高应该是375×150px，就刚刚好。</p>
+<p>倘若页面并没有scale 0.5，我们的代码就得这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.px2rem(width, 375);</span><br><span class="line">.px2rem(height, 150);</span><br></pre></td></tr></table></figure>
+<p>这样的宽高，我们往往是这样得来的：</p>
+<ol>
+<li>将<code>750×1334</code>的视觉稿转成<code>375×667</code>的大小后，再去量这个区块的大小(感觉好傻)。</li>
+<li>在<code>750×1334</code>量得区块宽高是750×300px后，再口算除以2(感觉好麻烦)。</li>
+</ol>
+<hr>
+<p>最后给出一张<code>没有布局适配(上图)</code>和<code>用rem布局适配(下图)</code>的对比图：</p>
+<p><img src="https://img.alicdn.com/tps/TB1hR.SIpXXXXaFXXXXXXXXXXXX.png" alt="enter image description here"></p>
+<p>(上面的手机分别是：iphone3gs, iphone5, iphone6)</p>
+<p>很明显可以看出，rem适配的各个区块的宽高都会随着手机屏宽而改变，最最明显的可以看一下图片列表那部分，最后一张图视觉稿要求只出现一点点，rem布局在任何屏幕下都显示的很好。</p>
+<hr>
+<h4 id="字体大小问题"><a href="#字体大小问题" class="headerlink" title="字体大小问题"></a>字体大小问题</h4><p>既然上面的方案会使得页面缩放(scale)，对于页面区块的宽高，我们可以依赖高清视觉稿，因为视觉稿本来就×2了，我们直接量就可以了，那么对于字体该如何处理呢？</p>
+<p>对于字体缩放问题，设计师原本的要求是这样的：<code>任何手机屏幕上字体大小都要统一</code>，所以我们针对不同的分辨率(dpr不同)，会做如下处理：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">font-size: 16px;</span><br><span class="line">[data-dpr=<span class="string">"2"</span>] input &#123;</span><br><span class="line">    font-size: 32px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(注意，字体不可以用rem，误差太大了，且不能满足任何屏幕下字体大小相同)</p>
+<p>为了方便，我们也会用less写一个mixin：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">.px2px(@name, @px)&#123;</span><br><span class="line">    @&#123;name&#125;: round(@px / 2) * 1px;</span><br><span class="line">    [data-dpr=<span class="string">"2"</span>] &amp; &#123;</span><br><span class="line">        @&#123;name&#125;: @px * 1px;</span><br><span class="line">    &#125;</span><br><span class="line">    // <span class="keyword">for</span> mx3</span><br><span class="line">    [data-dpr=<span class="string">"2.5"</span>] &amp; &#123;</span><br><span class="line">        @&#123;name&#125;: round(@px * 2.5 / 2) * 1px;</span><br><span class="line">    &#125;</span><br><span class="line">    // <span class="keyword">for</span> 小米note</span><br><span class="line">    [data-dpr=<span class="string">"2.75"</span>] &amp; &#123;</span><br><span class="line">        @&#123;name&#125;: round(@px * 2.75 / 2) * 1px;</span><br><span class="line">    &#125;</span><br><span class="line">    [data-dpr=<span class="string">"3"</span>] &amp; &#123;</span><br><span class="line">        @&#123;name&#125;: round(@px / 2 * 3) * 1px</span><br><span class="line">    &#125;</span><br><span class="line">    // <span class="keyword">for</span> 三星note4</span><br><span class="line">    [data-dpr=<span class="string">"4"</span>] &amp; &#123;</span><br><span class="line">        @&#123;name&#125;: @px * 2px;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(注意：html的data-dpr属性就是之前js方案里面有提到的，这里就有用处了)</p>
+<p>根据经验和测试，还是会出现这些奇奇葩葩的dpr，这里做了统一兼容~</p>
+<p>用的时候，就像这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.px2px(font-size, 32);</span><br></pre></td></tr></table></figure>
+<p>当然对于其他css属性，如果也要求不同dpr下都保持一致的话，也可以这样操作，如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.px2px(padding, 20);</span><br><span class="line">.px2px(right, 8);</span><br></pre></td></tr></table></figure>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>上面对移动端H5高清和多屏适配的一些方案总结，和知识讲解，不对的地方，还请指出来，新浪微博 - Lovesueee。</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a href="http://www.smashingmagazine.com/2012/08/20/towards-retina-web/" target="_blank" rel="noopener">http://www.smashingmagazine.com/2012/08/20/towards-retina-web/</a></li>
+<li><a href="http://www.paintcodeapp.com/news/iphone-6-screens-demystified" target="_blank" rel="noopener">http://www.paintcodeapp.com/news/iphone-6-screens-demystified</a></li>
+<li><a href="http://www.inserthtml.com/2012/09/designing-retina-devices/" target="_blank" rel="noopener">http://www.inserthtml.com/2012/09/designing-retina-devices/</a></li>
+<li><a href="http://iconmoon.com/blog2/iphone-6-plus-screen-size/" target="_blank" rel="noopener">http://iconmoon.com/blog2/iphone-6-plus-screen-size/</a></li>
+<li><a href="http://dieulot.net/css-retina-hairline" target="_blank" rel="noopener">http://dieulot.net/css-retina-hairline</a></li>
+</ol>
+<p>原创文章，转载请说明出处：<a href="http://www.cnblogs.com/lovesueee/p/4618454.html" target="_blank" rel="noopener">http://www.cnblogs.com/lovesueee/p/4618454.html</a>。</p>
+
+    </div>
+
+    <div>全文完。</div>
+  </article>
+  <div class="toc-container">
+    
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#视觉稿"><span class="toc-text">视觉稿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一些概念"><span class="toc-text">一些概念</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#物理像素-physical-pixel"><span class="toc-text">物理像素(physical pixel)</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#设备独立像素-density-independent-pixel"><span class="toc-text">设备独立像素(density-independent pixel)</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#设备像素比-device-pixel-ratio"><span class="toc-text">设备像素比(device pixel ratio)</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#综合上面几个概念，一起举例说明下："><span class="toc-text">综合上面几个概念，一起举例说明下：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#位图像素"><span class="toc-text">位图像素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#几个问题"><span class="toc-text">几个问题</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#retina下，图片高清问题"><span class="toc-text">retina下，图片高清问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#retina下，border-1px问题"><span class="toc-text">retina下，border: 1px问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#多屏适配布局问题"><span class="toc-text">多屏适配布局问题</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#字体大小问题"><span class="toc-text">字体大小问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后"><span class="toc-text">最后</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考文章"><span class="toc-text">参考文章</span></a></li></ol>
+  </div>
+
+
+  </div>
+</div>
+<div class="copyright">
+    <span>本作品采用</span>
+    <a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 国际许可协议</a>
+    <span>进行许可。 转载时请注明原文链接。</span>
+</div>
+<div class="share">
+
+</div>
+  
+    <div class="post-nav">
+      <div class="post-nav-item post-nav-next">
+        
+          <span>〈 </span>
+          <a href="/2018/06/27/hello-world/" rel="next" title="Hello World">
+          Hello World
+          </a>
+        
+      </div>
+  
+      <div class="post-nav-item post-nav-prev">
+          
+      </div>
+    </div>
+  
+
+
+    </div>
+
+    
+
+  </div>
+  <footer class="footer text-center">
+    <div id="bottom-inner">
+        <a class="bottom-item" href="https://liuchangnian.com">首页</a> |
+        <a class="bottom-item" href="https://liuchangnian.com" target="_blank">主站</a> |
+        <a class="bottom-item" href="https://github.com/az031120103" target="_blank">GitHub</a> |
+        <a class="bottom-item" href="https://hexo.io" target="_blank">Powered by hexo</a> |
+        <a class="bottom-item" href="https://github.com/KevinOfNeu/hexo-theme-xoxo" target="_blank">Theme xoxo</a>
+    </div>
+</footer>
+  
+
+<script>
+  (function(window, document, undefined) {
+
+    var timer = null;
+
+    function returnTop() {
+      cancelAnimationFrame(timer);
+      timer = requestAnimationFrame(function fn() {
+        var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (oTop > 0) {
+          document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+          timer = requestAnimationFrame(fn);
+        } else {
+          cancelAnimationFrame(timer);
+        }
+      });
+    }
+
+    var hearts = [];
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          setTimeout(callback, 1000 / 60);
+        }
+    })();
+    init();
+
+    function init() {
+      css(".heart{z-index:9999;width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: absolute;}.heart:after{top: -5px;}.heart:before{left: -5px;}");
+      attachEvent();
+      gameloop();
+      addMenuEvent();
+    }
+
+    function gameloop() {
+      for (var i = 0; i < hearts.length; i++) {
+        if (hearts[i].alpha <= 0) {
+          document.body.removeChild(hearts[i].el);
+          hearts.splice(i, 1);
+          continue;
+        }
+        hearts[i].y--;
+        hearts[i].scale += 0.004;
+        hearts[i].alpha -= 0.013;
+        hearts[i].el.style.cssText = "left:" + hearts[i].x + "px;top:" + hearts[i].y + "px;opacity:" + hearts[i].alpha + ";transform:scale(" + hearts[i].scale + "," + hearts[i].scale + ") rotate(45deg);background:" + hearts[i].color;
+      }
+      requestAnimationFrame(gameloop);
+    }
+
+    /**
+     * 给logo设置点击事件
+     * 
+     * - 回到顶部
+     * - 出现爱心
+     */
+    function attachEvent() {
+      var old = typeof window.onclick === "function" && window.onclick;
+      var logo = document.getElementById("logo");
+      if (logo) {
+        logo.onclick = function(event) {
+          returnTop();
+          old && old();
+          createHeart(event);
+        }
+      }
+      
+    }
+
+    function createHeart(event) {
+      var d = document.createElement("div");
+      d.className = "heart";
+      hearts.push({
+        el: d,
+        x: event.clientX - 5,
+        y: event.clientY - 5,
+        scale: 1,
+        alpha: 1,
+        color: randomColor()
+      });
+      document.body.appendChild(d);
+    }
+
+    function css(css) {
+      var style = document.createElement("style");
+      style.type = "text/css";
+      try {
+        style.appendChild(document.createTextNode(css));
+      } catch (ex) {
+        style.styleSheet.cssText = css;
+      }
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
+    function randomColor() {
+      // return "rgb(" + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + "," + (~~(Math.random() * 255)) + ")";
+      return "#F44336";
+    }
+
+    function addMenuEvent() {
+      var menu = document.getElementById('menu-main-post');
+      if (menu) {
+        var toc = document.getElementById('toc');
+        if (toc) {
+          menu.onclick = function() {
+            if (toc) {
+              if (toc.style.display == 'block') {
+                toc.style.display = 'none';
+              } else {
+                toc.style.display = 'block';
+              }
+            }
+          };
+        } else {
+          menu.style.display = 'none';
+        }
+      }
+    }
+
+  })(window, document);
+</script>
+
+  
+
+
+
+</body>
+</html>
